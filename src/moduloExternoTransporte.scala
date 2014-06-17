@@ -9,20 +9,9 @@ class moduloExternoTransporte extends App{
       
     }
     
-    def puedeCombinarse(t1: Transporte, t2: Transporte) :Integer = {
-      
-      if(!t1.combinaciones.isEmpty){
-    	  if (t1.combinaciones.contains(t2.linea)){
-    		  return t1.combinaciones(t2.linea) 
-    	  }
-    	  else{
-    	    return null
-    	  }
-      }
-      else{
-        return null
-      }
-      
+    def obtenerCombinaciones(t1: Transporte, t2: Transporte) :List[Estacion] = {
+    		
+      t1.estaciones.filter(est => t2.estaciones.contains(est) )
     }
     
     def distanciaRecorrida(origen: Direccion, destino: Direccion, transporte: Transporte){

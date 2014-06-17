@@ -1,4 +1,3 @@
-class Tramo(val inicio: Estacion, val fin: Estacion) extends App{
+class Tramo(val inicio: Estacion, val fin: Estacion, val transporte: Transporte) extends App{
   
-	var transporte = new Object
 }

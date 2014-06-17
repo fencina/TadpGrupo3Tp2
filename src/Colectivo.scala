@@ -1,4 +1,4 @@
-class Colectivo(override val linea: String, override val estacion: Estacion, override val combinaciones: Map[String,Int]) extends Transporte(linea, estacion, combinaciones ) {
+class Colectivo(override val linea: String, override val estaciones: List[Estacion]) extends Transporte(linea, estaciones) {
   
   override def precio(distancia: Int) :Double = distancia match {
     case distancia if (distancia < 3) => 2.5

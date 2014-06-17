@@ -1,3 +1,3 @@
-class Estacion(val numero: Int, val nombre: String) extends App{
+class Estacion(val numero: Int, val nombre: String, val direccion: Direccion = null) extends App{
 
 }
