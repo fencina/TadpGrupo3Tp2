@@ -1,4 +1,4 @@
-class Direccion(val descripcion: String, val transportesCercanos: List[Transporte]) extends App {
+class Direccion(val descripcion: String = null, val transportesCercanos: List[Transporte] = null) extends App {
   
   
 

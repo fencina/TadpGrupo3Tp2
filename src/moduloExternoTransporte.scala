@@ -13,7 +13,7 @@ class moduloExternoTransporte extends App{
       
       if(!t1.combinaciones.isEmpty){
     	  if (t1.combinaciones.contains(t2.linea)){
-    		  return t1.combinaciones("E") 
+    		  return t1.combinaciones(t2.linea) 
     	  }
     	  else{
     	    return null
