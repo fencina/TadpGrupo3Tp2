@@ -1,20 +1,32 @@
 class moduloExternoTransporte extends App{
 
 	  
-    def getTransportesCercanos( direccion: Direccion) : List[Transporte] = direccion.descripcion  match{
+    def getTransportesCercanos( direccion: Direccion) : List[Transporte] = {
       
-      	case "origen1" => direccion.transportesCercanos
+      	 direccion.transportesCercanos
+    }
+    
+    def obtenerCombinacion(t1: Transporte, t2: Transporte, origen: Direccion, destino: Direccion) :Estacion = {
+
+      val estacionOrigen = t1.estaciones.filter(e => e.direccion == origen).head
+	  val estacionDestino = t2.estaciones.filter(e => e.direccion == destino).head
+	  
+      val combinaciones = t1.estaciones.filter(est => t2.estaciones.contains(est) && est != estacionOrigen && est != estacionDestino)
       
-    	case "destino1" => direccion.transportesCercanos
+      if(!combinaciones.isEmpty)
+        return combinaciones.head
+       
+       return null
       
     }
     
-    def obtenerCombinaciones(t1: Transporte, t2: Transporte) :List[Estacion] = {
-    		
-      t1.estaciones.filter(est => t2.estaciones.contains(est) )
+    def puedeCombinarse(t1: Transporte, t2: Transporte, origen: Direccion, destino: Direccion) :Boolean = {
+      
+      return this.obtenerCombinacion(t1, t2, origen, destino) != null
+      
     }
     
-    def distanciaRecorrida(origen: Direccion, destino: Direccion, transporte: Transporte){
+    def distanciaRecorrida(estacionInicio: Estacion, estacionFin: Estacion) :Int {
       
     }
     
