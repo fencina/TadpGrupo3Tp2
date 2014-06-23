@@ -1,15 +1,25 @@
-class Busqueda extends App{
+class Busqueda {
   
   
-  def comoViajo(origen: Direccion, destino: Direccion) :List[Viaje] = {
+  def comoViajo(origen: Direccion, destino: Direccion,descuento:Descuento) :List[Viaje] = {
     val moduloExterno = new moduloExternoTransporte
     
     val transportesOrigen: List[Transporte] = moduloExterno.getTransportesCercanos(origen)
     val transportesDestino = moduloExterno.getTransportesCercanos(destino)
-    val viajes = this.obtenerViajes(transportesOrigen, transportesDestino, origen, destino)
-    return viajes
+    var viajes = this.obtenerViajes(transportesOrigen, transportesDestino, origen, destino)
+    viajes = this.aplicarDescuento(descuento,viajes)
+    
+    return  viajes
+    
+   
     
   }
+  
+  def aplicarDescuento(descuento:Descuento,viaje:List[Viaje])  = descuento match{
+    case Turismo(n) => 
+      
+      
+  } 
   
   def obtenerViajes(transportesOrigen: List[Transporte], transportesDestino: List[Transporte], origen: Direccion, destino: Direccion) :List[Viaje] = {
     
@@ -39,6 +49,8 @@ class Busqueda extends App{
         }
       }
     }
+    
+    Estadisticas.addViajes(viajes)
     
     return viajes
   }

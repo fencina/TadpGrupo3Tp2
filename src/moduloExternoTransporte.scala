@@ -1,4 +1,4 @@
-class moduloExternoTransporte extends App{
+class moduloExternoTransporte{
 
 	  
     def getTransportesCercanos( direccion: Direccion) : List[Transporte] = {
@@ -27,7 +27,7 @@ class moduloExternoTransporte extends App{
     }
     
     def distanciaRecorrida(estacionInicio: Estacion, estacionFin: Estacion) :Int ={
-      return 1;
+      return 400;
     }
     
 }

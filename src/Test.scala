@@ -2,7 +2,10 @@
 object Test extends App{
   
   /******** Test ********/
-	 val moduloExterno = new moduloExternoTransporte
+	 
+	val moduloExterno = new moduloExternoTransporte
+	 
+	 
 	 
       //Creacion direcciones
      val origen1: Direccion =  new Direccion("origen1")  
@@ -14,9 +17,18 @@ object Test extends App{
 	 val e2 = new Estacion(10,"e2",destino1)
 	 val e3 = new Estacion(7,"e3",intermedia1)
 	 
+	 //Estaciones Trenes
+	 val eT1 = new Estacion(1,"Estacion A",origen1);
+	 val eT2 = new Estacion(2,"Estacion B",intermedia1);
+	 val eT3 = new Estacion(3,"Estacion C",destino1);
+	 
+	 
     //Creacion transportes
 	 
 	 val colectivo23 = new Colectivo("23",List(e1,e2,e3))
+	 
+	 val tren = new Tren("A",List(eT1,eT2,eT3),List(new PrecioTren(2,1),new PrecioTren(4,2)))
+
 	 
 	 val subteE = new Subte("E",List(e2,e3))
 	 
@@ -34,14 +46,19 @@ object Test extends App{
     
     val busqueda = new Busqueda
 	 
-	var viajes = busqueda.comoViajo(origen1, destino1)
+	var viajes = busqueda.comoViajo(origen1, destino1, Turismo())
 	
 	for (v <- viajes){
 		println("Nuevo Viaje:"+v);
 		for (t <- v.tramos){
 		  println("Nuevo Tramo")
 		  println("Estacion Inicio: "+t.inicio.nombre+" Estacion fin: "+t.fin.nombre+" Linea: "+t.transporte.linea)
+		  println("Duracion del tramo:" + t.duracion + " minutos")
+		   println("Costo tramo:" + t.costo + " pesos")
 		} 
+		 println("Duracion total:" + v.duracion + " minutos")
+		 println("Costo total:" + v.costo + " pesos")
 	}
-
+	 
+	
 }

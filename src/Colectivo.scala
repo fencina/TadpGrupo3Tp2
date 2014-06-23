@@ -1,4 +1,19 @@
-class Colectivo(override val linea: String, override val estaciones: List[Estacion]) extends Transporte(linea, estaciones) {
+case class Colectivo(override val linea: String, override val estaciones: List[Estacion]) extends Transporte(linea, estaciones) {
+  
+  
+   override def calcularDuracion(estacionInicio:Estacion, estacionFin:Estacion): Double = {
+     
+   val distancia = new moduloExternoTransporte().distanciaRecorrida(estacionInicio, estacionFin)
+   
+	return this.distanciaAMinutos(distancia)	   
+   
+   }
+  
+  
+  
+  //NO ESTA ESPECIFICADO
+  def duracionCombinacionCon(transporte:Transporte) = 0
+ 
   
   override def costo(estacionInicio: Estacion, estacionFin: Estacion) :Double ={
     val moduloExterno = new moduloExternoTransporte
