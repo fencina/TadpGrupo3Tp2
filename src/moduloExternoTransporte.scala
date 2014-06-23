@@ -11,7 +11,7 @@ class moduloExternoTransporte extends App{
       val estacionOrigen = t1.estaciones.filter(e => e.direccion == origen).head
 	  val estacionDestino = t2.estaciones.filter(e => e.direccion == destino).head
 	  
-      val combinaciones = t1.estaciones.filter(est => t2.estaciones.contains(est) && est != estacionOrigen && est != estacionDestino)
+      val combinaciones = t1.estaciones.filter(est => t2.estaciones.map{e=> e.direccion}.contains(est.direccion) && est.direccion !=origen && est.direccion != destino)
       
       if(!combinaciones.isEmpty)
         return combinaciones.head
@@ -26,8 +26,8 @@ class moduloExternoTransporte extends App{
       
     }
     
-    def distanciaRecorrida(estacionInicio: Estacion, estacionFin: Estacion) :Int {
-      
+    def distanciaRecorrida(estacionInicio: Estacion, estacionFin: Estacion) :Int ={
+      return 1;
     }
     
 }
