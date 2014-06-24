@@ -1,23 +1,39 @@
 class Busqueda {
   
   
-  def comoViajo(origen: Direccion, destino: Direccion,descuento:Descuento) :List[Viaje] = {
+  def comoViajo(origen: Direccion, destino: Direccion,descuento:Descuento, criterio:Criterio = SinCriterio()) :List[Viaje] = {
     val moduloExterno = new moduloExternoTransporte
     
     val transportesOrigen: List[Transporte] = moduloExterno.getTransportesCercanos(origen)
     val transportesDestino = moduloExterno.getTransportesCercanos(destino)
     var viajes = this.obtenerViajes(transportesOrigen, transportesDestino, origen, destino)
-    viajes = this.aplicarDescuento(descuento,viajes)
+    this.chequearDescuento(descuento,viajes)
+    viajes = this.ordenarPorCriterio(criterio,viajes)
     
+    
+    Estadisticas.addViajes(viajes)
+      
     return  viajes
-    
-   
-    
+     
   }
   
-  def aplicarDescuento(descuento:Descuento,viaje:List[Viaje])  = descuento match{
-    case Turismo(n) => 
-      
+  def ordenarPorCriterio(criterio:Criterio,viajes:List[Viaje]) = criterio match {
+    case PorTiempo() => viajes.sortWith((v1,v2) => v1.duracion < v2.duracion) 
+    case PorPrecio() => viajes.sortWith((v1,v2) => v1.costo < v2.costo) 
+    case SinCriterio() => viajes
+  }
+  
+  def chequearDescuento(descuento:Descuento,viajes:List[Viaje])  = descuento match{
+    case Turismo(zona,nombre) => 
+      for(viaje <- viajes)
+       if(!viaje.tramos.filter(tramo => tramo.inicio.direccion.zona==zona || tramo.fin.direccion.zona == zona).isEmpty)
+          viaje.descuento = Turismo(zona,nombre)
+    case Discapacitados(n) => 
+      for(viaje <- viajes)
+        viaje.descuento = Discapacitados(n)     
+    case Trabajo(n) =>  for(viaje <- viajes) viaje.tramos.last.fin.direccion.zona match{
+      case ZonaTrabajo() => viaje.descuento = Trabajo(n) 
+    }
       
   } 
   
@@ -50,7 +66,7 @@ class Busqueda {
       }
     }
     
-    Estadisticas.addViajes(viajes)
+  
     
     return viajes
   }

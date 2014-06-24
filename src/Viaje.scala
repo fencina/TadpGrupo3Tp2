@@ -1,7 +1,9 @@
 
 class Viaje(val tramos: List[Tramo]){
   
-  def costo() :Double = tramos.map(t => t.costo).sum
+  var descuento:Descuento = SinDescuento()
+  
+  def costo() :Double = descuento.aplicar(tramos.map(t => t.costo).sum)
   
   def duracion : Double = tramos.map(t=> t.duracion ).sum + this.calcularDuracionesCombinaciones()
   

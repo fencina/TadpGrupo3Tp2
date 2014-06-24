@@ -5,13 +5,17 @@ object Test extends App{
 	 
 	val moduloExterno = new moduloExternoTransporte
 	 
-	 
-	 
+	 	
+	val LaBoca : ZonaAbstract = new Zona()
+	val Centro : ZonaAbstract = new ZonaTrabajo()
+
       //Creacion direcciones
-     val origen1: Direccion =  new Direccion("origen1")  
-     val destino1: Direccion =  new Direccion("destino1")
-	 val intermedia1: Direccion =  new Direccion("intermedia1")
-	 
+     val origen1: Direccion =  new Direccion("origen1",LaBoca)  
+     val destino1: Direccion =  new Direccion("destino1",Centro)
+	 val intermedia1: Direccion =  new Direccion("intermedia1",Centro)
+	
+
+	
   	 //Creacion Estaciones
 	 val e1 = new Estacion(1,"e1",origen1)
 	 val e2 = new Estacion(10,"e2",destino1)
@@ -45,8 +49,8 @@ object Test extends App{
     var transportesCercanosDestino = moduloExterno.getTransportesCercanos(destino1)
     
     val busqueda = new Busqueda
-	 
-	var viajes = busqueda.comoViajo(origen1, destino1, Turismo())
+
+	var viajes = busqueda.comoViajo(origen1, destino1, Turismo(LaBoca),PorTiempo())
 	
 	for (v <- viajes){
 		println("Nuevo Viaje:"+v);
@@ -60,5 +64,6 @@ object Test extends App{
 		 println("Costo total:" + v.costo + " pesos")
 	}
 	 
+
 	
 }
