@@ -1,3 +1,5 @@
+package tadp.transportes
+
 case class Subte(override val linea: String, override val estaciones: List[Estacion]) extends Transporte(linea, estaciones) {
   
  override def duracionEstacion = 2;
