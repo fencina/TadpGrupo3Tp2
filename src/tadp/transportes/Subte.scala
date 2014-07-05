@@ -6,7 +6,7 @@ case class Subte(override val linea: String, override val estaciones: List[Estac
   
     override def duracionCombinacionCon(t:Transporte,estacionInicio:Estacion,estacionFin:Estacion) : Double = t match{
       case Tren(linea,estaciones,listaPrecios) => return 5;  
-      case Subte(linea,estaciones) => return 4;
+      case Subte(linea,estaciones) => return 0;
       case Colectivo(linea,estaciones) => return moduloExterno.distanciaRecorrida(estacionInicio, estacionFin)/100*2.5;
     }
   
