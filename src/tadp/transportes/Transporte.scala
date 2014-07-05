@@ -1,10 +1,17 @@
 package tadp.transportes
 
+import tadp.dependencias.moduloExternoTransporte
+
 abstract class Transporte(val linea: String, val estaciones: List[Estacion]) {
 
+  var moduloExterno:moduloExternoTransporte = null;
+  
   def duracionEstacion: Double = 0;
 
-  def duracionCombinacionCon(transporte: Transporte): Double
+   def setModuloExterno(modulo : moduloExternoTransporte) = moduloExterno=modulo;
+  
+  
+  def duracionCombinacionCon(transporte: Transporte,estacionInicio:Estacion,estacionFin:Estacion): Double
 
   def costo(estacionInicio: Estacion, estacionFin: Estacion): Double;
 

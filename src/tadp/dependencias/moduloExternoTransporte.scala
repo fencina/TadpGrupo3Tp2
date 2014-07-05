@@ -10,7 +10,7 @@ class moduloExternoTransporte {
 
   def getTransportesCercanos(direccion: Direccion): List[Transporte] = direccion.transportesCercanos
 
-  def obtenerCombinacion(t1: Transporte, t2: Transporte, origen: Direccion, destino: Direccion): Estacion = {
+  def obtenerCombinacion(t1: Transporte, t2: Transporte, origen: Direccion, destino: Direccion): Option[Estacion] = {
     val estacionOrigen = t1.estaciones.filter(e => e.direccion == origen).head
     val estacionDestino = t2.estaciones.filter(e => e.direccion == destino).head
 
@@ -25,16 +25,14 @@ class moduloExternoTransporte {
       }
 
     if (!combinaciones.isEmpty)
-      return combinaciones.head
+      return Some(combinaciones.head)
 
-    return null // TODO! no retornar null!!!
+    return None// TODO! no retornar null!!!
   }
 
-  def puedeCombinarse(t1: Transporte, t2: Transporte, origen: Direccion, destino: Direccion): Boolean = {
+  def puedeCombinarse(t1: Transporte, t2: Transporte, origen: Direccion, destino: Direccion): Boolean = !this.obtenerCombinacion(t1, t2, origen, destino).isEmpty
 
-    return this.obtenerCombinacion(t1, t2, origen, destino) != null
-
-  }
+  
 
   def distanciaRecorrida(estacionInicio: Estacion, estacionFin: Estacion): Int = {
     return 400;

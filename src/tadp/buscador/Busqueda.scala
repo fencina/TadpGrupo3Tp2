@@ -7,7 +7,7 @@ import tadp.estadisticas.Estadisticas
 
 class Busqueda {
 
-  def comoViajo(origen: Direccion, destino: Direccion, descuento: Descuento, criterio: Criterio = SinCriterio()): List[Viaje] = {
+  def comoViajo(origen: Direccion, destino: Direccion, descuento: Descuento = SinDescuento(), criterio: Criterio = SinCriterio()): List[Viaje] = {
     val moduloExterno = new moduloExternoTransporte
 
     val transportesOrigen: List[Transporte] = moduloExterno.getTransportesCercanos(origen)
@@ -39,6 +39,7 @@ class Busqueda {
     case Trabajo(n) => for (viaje <- viajes) viaje.tramos.last.fin.direccion.zona match {
       case ZonaTrabajo() => viaje.descuento = Trabajo(n)
     }
+    case SinDescuento() => for (viaje <- viajes)viaje.descuento = SinDescuento()
 
   }
 
@@ -63,7 +64,7 @@ class Busqueda {
         if (moduloExterno.puedeCombinarse(tOrigen, tDestino, origen, destino)) {
           val estacionOrigen = tOrigen.estaciones.filter(e => e.direccion == origen).head
           val estacionDestino = tDestino.estaciones.filter(e => e.direccion == destino).head
-          val estacionCombinacion = moduloExterno.obtenerCombinacion(tOrigen, tDestino, origen, destino)
+          val estacionCombinacion = moduloExterno.obtenerCombinacion(tOrigen, tDestino, origen, destino).get
           val tramo1 = new Tramo(estacionOrigen, estacionCombinacion, tOrigen)
           val tramo2 = new Tramo(estacionCombinacion, estacionDestino, tDestino)
           viajes = viajes :+ new Viaje(List(tramo1, tramo2))

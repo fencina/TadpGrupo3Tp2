@@ -13,7 +13,7 @@ class Viaje(val tramos: List[Tramo]) {
   def calcularDuracionesCombinaciones(): Double = {
 
     if (this.tramos.size > 1)
-      return this.tramos.head.transporte.duracionCombinacionCon(this.tramos.tail.head.transporte)
+      return this.tramos.head.transporte.duracionCombinacionCon(this.tramos.tail.head.transporte,this.tramos.head.fin,this.tramos.tail.head.inicio)
     return 0;
 
   }
