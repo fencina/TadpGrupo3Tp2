@@ -1,26 +1,25 @@
 package tadp.transportes
 
 import tadp.dependencias.moduloExternoTransporte
+import tadp.dependencias.moduloExternoTransporte
+import tadp.dependencias.moduloExternoTransporte
 
 
 case class Colectivo(override val linea: String, override val estaciones: List[Estacion]) extends Transporte(linea, estaciones) {
 
  
-  override def calcularDuracion(estacionInicio: Estacion, estacionFin: Estacion): Double = {
+  override def calcularDuracion(estacionInicio: Estacion, estacionFin: Estacion,moduloExterno:moduloExternoTransporte): Double = {
 
-    val distancia = moduloExterno.distanciaRecorrida(estacionInicio, estacionFin)
+    val distancia = moduloExterno.distanciaEntre(estacionInicio, estacionFin)
 
     return this.distanciaAMinutos(distancia)
 
   }
 
-  //NO ESTA ESPECIFICADO
-  def duracionCombinacionCon(t: Transporte,estacionInicio:Estacion,estacionFin:Estacion): Double = moduloExterno.distanciaRecorrida(estacionInicio, estacionFin)/100*2.5;
-  
-  
-  override def costo(estacionInicio: Estacion, estacionFin: Estacion): Double = {
+
+  override def costo(estacionInicio: Estacion, estacionFin: Estacion,moduloExterno:moduloExternoTransporte): Double = {
  
-    val distancia = moduloExterno.distanciaRecorrida(estacionInicio, estacionFin)
+    val distancia = moduloExterno.distanciaEntre(estacionInicio, estacionFin)
     return this.obtenerCosto(this.metrostokm(distancia))
   }
 
@@ -30,4 +29,6 @@ case class Colectivo(override val linea: String, override val estaciones: List[E
     case _                            => 2.75
   }
 
+ override def soyColectivo=true
+  
 }

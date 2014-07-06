@@ -1,15 +1,13 @@
 package tadp.transportes
 
+import tadp.dependencias.moduloExternoTransporte
+
 case class Subte(override val linea: String, override val estaciones: List[Estacion]) extends Transporte(linea, estaciones) {
   
  override def duracionEstacion = 2;
-  
-    override def duracionCombinacionCon(t:Transporte,estacionInicio:Estacion,estacionFin:Estacion) : Double = t match{
-      case Tren(linea,estaciones,listaPrecios) => return 5;  
-      case Subte(linea,estaciones) => return 0;
-      case Colectivo(linea,estaciones) => return moduloExterno.distanciaRecorrida(estacionInicio, estacionFin)/100*2.5;
-    }
-  
-    override def costo(estacionInicio: Estacion, estacionFin: Estacion) :Double = 4.5
 
+ override def costo(estacionInicio: Estacion, estacionFin: Estacion,moduloExterno:moduloExternoTransporte) :Double = 4.5
+
+ override def soySubte = true;
+ 
 }

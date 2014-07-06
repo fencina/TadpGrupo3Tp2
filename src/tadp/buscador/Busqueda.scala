@@ -4,75 +4,98 @@ import tadp.transportes.Transporte
 import tadp.dependencias.moduloExternoTransporte
 import tadp.transportes.Tramo
 import tadp.estadisticas.Estadisticas
+import tadp.dependencias.moduloExternoTransporte
+import tadp.transportes.CombinacionSubtes
+import tadp.transportes.Subte
+import tadp.transportes.CombinacionColectivoYOtro
+import tadp.transportes.CombinacionSubtes
+import tadp.transportes.CombinacionTrenes
+import tadp.transportes.CombinacionTrenYSubte
+import tadp.dependencias.moduloExternoTransporte
+import tadp.transportes.Estacion
+import tadp.transportes.Combinacion
 
 class Busqueda {
 
-  def comoViajo(origen: Direccion, destino: Direccion, descuento: Descuento = SinDescuento(), criterio: Criterio = SinCriterio()): List[Viaje] = {
-    val moduloExterno = new moduloExternoTransporte
+  def comoViajo(origen: Direccion, destino: Direccion, descuento:Option[Descuento], criterio: Criterio ,moduloExterno:moduloExternoTransporte): List[Viaje] = {
 
     val transportesOrigen: List[Transporte] = moduloExterno.getTransportesCercanos(origen)
-    val transportesDestino = moduloExterno.getTransportesCercanos(destino)
-    var viajes = this.obtenerViajes(transportesOrigen, transportesDestino, origen, destino)
-    this.chequearDescuento(descuento, viajes)
-    viajes = this.ordenarPorCriterio(criterio, viajes)
-
-    Estadisticas.addViajes(viajes)
-
-    return viajes
-
-  }
-
-  def ordenarPorCriterio(criterio: Criterio, viajes: List[Viaje]) = criterio match {
-    case PorTiempo()   => viajes.sortWith((v1, v2) => v1.duracion < v2.duracion)
-    case PorPrecio()   => viajes.sortWith((v1, v2) => v1.costo < v2.costo)
-    case SinCriterio() => viajes
-  }
-
-  def chequearDescuento(descuento: Descuento, viajes: List[Viaje]) = descuento match {
-    case Turismo(zona, nombre) =>
-      for (viaje <- viajes)
-        if (!viaje.tramos.filter(tramo => tramo.inicio.direccion.zona == zona || tramo.fin.direccion.zona == zona).isEmpty)
-          viaje.descuento = Turismo(zona, nombre)
-    case Discapacitados(n) =>
-      for (viaje <- viajes)
-        viaje.descuento = Discapacitados(n)
-    case Trabajo(n) => for (viaje <- viajes) viaje.tramos.last.fin.direccion.zona match {
-      case ZonaTrabajo() => viaje.descuento = Trabajo(n)
+    val transportesDestino: List[Transporte] = moduloExterno.getTransportesCercanos(destino)
+    val viajes = this.obtenerViajes(transportesOrigen, transportesDestino, origen, destino,moduloExterno)
+    
+    
+    descuento match{
+      case Some(descuento) =>return viajes.map(viaje=> this.aplicarDescuento(descuento,viaje)).asInstanceOf[List[Viaje]].sorted(criterio)
+      case None => 
     }
-    case SinDescuento() => for (viaje <- viajes)viaje.descuento = SinDescuento()
+
+    
+    return  viajes.sorted(criterio)
 
   }
+  
+  def aplicarDescuento(descuento: Descuento, viaje: Viaje) = descuento match {
+    case Turismo(zona, nombre) =>
+        if (viaje.tengoAlgunTramoDeLaZona(zona))
+          viaje.aplicarDescuento(Turismo(zona, nombre)) 
+    case Discapacitados(n) =>
+        viaje.aplicarDescuento(Discapacitados(n)) 
+    case Trabajo(n) => viaje.zonaEnLaQueTermina match {
+      case ZonaTrabajo() =>  viaje.aplicarDescuento(Trabajo(n)) 
+    }
+  }
 
-  def obtenerViajes(transportesOrigen: List[Transporte], transportesDestino: List[Transporte], origen: Direccion, destino: Direccion): List[Viaje] = {
+  def obtenerViajes(
+    transportesOrigen: List[Transporte],
+    transportesDestino: List[Transporte],
+    origen: Direccion,
+    destino: Direccion,
+    moduloExterno:moduloExternoTransporte): List[Viaje] = {
 
-    val moduloExterno = new moduloExternoTransporte
-    var viajes: List[Viaje] = List()
 
     //Verificar tramos sin combinaciones
     val transportesDirectos = transportesOrigen.filter(tO => transportesDestino.contains(tO))
-
-    for (t <- transportesDirectos) {
-      val estacionOrigen = t.estaciones.filter(e => e.direccion == origen).head
-      val estacionDestino = t.estaciones.filter(e => e.direccion == destino).head
-
-      viajes = viajes :+ new Viaje(List(new Tramo(estacionOrigen, estacionDestino, t)))
+    
+    val directos = for (t <- transportesDirectos) yield {
+      val estacionOrigen = t.estaciones.filter(e => moduloExterno.estanCerca(e.direccion , origen)).head
+      val estacionDestino = t.estaciones.filter(e => moduloExterno.estanCerca(e.direccion , destino)).head
+      new Viaje(List(new Tramo(estacionOrigen, estacionDestino, t,moduloExterno)),None)
     }
-
+  
     //Verificar tramos con combinaciones
-    for (tOrigen <- transportesOrigen) {
-      for (tDestino <- transportesDestino.filter(transporte => !transportesOrigen.contains(transporte))) {
-        if (moduloExterno.puedeCombinarse(tOrigen, tDestino, origen, destino)) {
-          val estacionOrigen = tOrigen.estaciones.filter(e => e.direccion == origen).head
-          val estacionDestino = tDestino.estaciones.filter(e => e.direccion == destino).head
-          val estacionCombinacion = moduloExterno.obtenerCombinacion(tOrigen, tDestino, origen, destino).get
-          val tramo1 = new Tramo(estacionOrigen, estacionCombinacion, tOrigen)
-          val tramo2 = new Tramo(estacionCombinacion, estacionDestino, tDestino)
-          viajes = viajes :+ new Viaje(List(tramo1, tramo2))
-        }
-      }
+    val combinados = for {
+      tOrigen <- transportesOrigen
+      tDestino <- transportesDestino.filter(transporte => !transportesOrigen.contains(transporte))
+      if moduloExterno.puedeCombinarse(tOrigen, tDestino, origen, destino)
+    } yield {
+      val estacionOrigen = tOrigen.estaciones.filter(e => moduloExterno.estanCerca(e.direccion , origen)).head
+      val estacionDestino = tDestino.estaciones.filter(e => moduloExterno.estanCerca(e.direccion , destino)).head
+      val estacionDondeBajar = moduloExterno.obtenerEstacionCombinacion(tOrigen, tDestino).get
+      val estacionDondeSubir = moduloExterno.obtenerEstacionCombinacion(tDestino,tOrigen).get
+      val tramo1 = new Tramo(estacionOrigen, estacionDondeBajar, tOrigen,moduloExterno)
+      val tramo2 = new Tramo(estacionDondeSubir, estacionDestino, tDestino,moduloExterno)
+      val combinacion = this.obtenerTipoCombinacion(tOrigen,tDestino,estacionDondeBajar,estacionDondeSubir,moduloExterno)
+      new Viaje(List(tramo1, tramo2),Some(combinacion))
     }
 
-    return viajes
+    
+    
+    return directos ++ combinados
   }
+  
 
+  def obtenerTipoCombinacion(tOrigen:Transporte,tDestino:Transporte,e1:Estacion,e2:Estacion,moduloExterno : moduloExternoTransporte) : Combinacion = {
+    if(tOrigen.soySubte && tDestino.soySubte)
+     return CombinacionSubtes(e1,e2,moduloExterno);
+    else if(tOrigen.soyTren && tDestino.soyTren)
+     return CombinacionTrenes(e1,e2,moduloExterno);
+    else if((tOrigen.soyTren && tDestino.soySubte) || (tOrigen.soySubte && tDestino.soyTren))
+    return	CombinacionTrenYSubte(e1,e2,moduloExterno);
+    else
+    return CombinacionColectivoYOtro(e1,e2,moduloExterno);
+    
+    
+  }
+  
+ 
 }
