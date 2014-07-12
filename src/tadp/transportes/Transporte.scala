@@ -20,15 +20,5 @@ abstract class Transporte(val linea: String, val estaciones: List[Estacion]) {
   def horastominutos(horas: Double): Double = horas * 60
   def minutostohoras(minutos: Double): Double = minutos / 60
 
-  // aca no puede ir, solo aplicable al colectivo!
-  def kilometrosahora(kilometros: Double): Double = kilometros / velocidadColectivo;
-  def distanciaAMinutos(d: Double): Double = this.horastominutos(this.kilometrosahora(this.metrostokm(d)))
 
-  // NO! solo es responsabilidad del colectivo la velocidad del colectivo!!!
-  def velocidadColectivo = 15
-
-  // NO, POR DIOS NO!!!
-  def soyTren = false
-  def soyColectivo = false
-  def soySubte = false
 }

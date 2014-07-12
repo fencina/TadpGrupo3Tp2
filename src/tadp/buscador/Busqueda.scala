@@ -4,15 +4,9 @@ import tadp.transportes.Transporte
 import tadp.dependencias.moduloExternoTransporte
 import tadp.transportes.Tramo
 import tadp.dependencias.moduloExternoTransporte
-import tadp.transportes.CombinacionSubtes
 import tadp.transportes.Subte
-import tadp.transportes.CombinacionColectivoYOtro
-import tadp.transportes.CombinacionSubtes
-import tadp.transportes.CombinacionTrenes
-import tadp.transportes.CombinacionTrenYSubte
 import tadp.dependencias.moduloExternoTransporte
 import tadp.transportes.Estacion
-import tadp.transportes.Combinacion
 
 class Busqueda {
 
@@ -54,7 +48,7 @@ class Busqueda {
       // El módulo externo debería darme la estación, no incluye una funcionalidad genérica de "está cerca"!
       val estacionOrigen = t.estaciones.filter(e => moduloExterno.estanCerca(e.direccion, origen)).head
       val estacionDestino = t.estaciones.filter(e => moduloExterno.estanCerca(e.direccion, destino)).head
-      new Viaje(List(new Tramo(estacionOrigen, estacionDestino, t, moduloExterno)), None)
+      new Viaje(List(new Tramo(estacionOrigen, estacionDestino, t, moduloExterno)), moduloExterno)
     }
 
     //Verificar tramos con combinaciones
@@ -74,23 +68,11 @@ class Busqueda {
 
       val tramo1 = new Tramo(estacionOrigen, estacionDondeBajar, tOrigen, moduloExterno)
       val tramo2 = new Tramo(estacionDondeSubir, estacionDestino, tDestino, moduloExterno)
-      val combinacion = this.obtenerTipoCombinacion(tOrigen, tDestino, estacionDondeBajar, estacionDondeSubir, moduloExterno)
-      new Viaje(List(tramo1, tramo2), Some(combinacion))
+      new Viaje(List(tramo1, tramo2), moduloExterno)
     }
 
     return directos ++ combinados
   }
 
-  // Mover a viaje (ver más detalles en viaje)
-  def obtenerTipoCombinacion(tOrigen: Transporte, tDestino: Transporte, e1: Estacion, e2: Estacion, moduloExterno: moduloExternoTransporte): Combinacion = {
-    if (tOrigen.soySubte && tDestino.soySubte)
-      return CombinacionSubtes(e1, e2, moduloExterno);
-    else if (tOrigen.soyTren && tDestino.soyTren)
-      return CombinacionTrenes(e1, e2, moduloExterno);
-    else if ((tOrigen.soyTren && tDestino.soySubte) || (tOrigen.soySubte && tDestino.soyTren))
-      return CombinacionTrenYSubte(e1, e2, moduloExterno);
-    else
-      return CombinacionColectivoYOtro(e1, e2, moduloExterno);
-  }
 
 }

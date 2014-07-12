@@ -8,7 +8,6 @@ case class Subte(override val linea: String, override val estaciones: List[Estac
 
   override def costo(estacionInicio: Estacion, estacionFin: Estacion, moduloExterno: moduloExternoTransporte): Double = 4.5
 
-  // NO!
-  override def soySubte = true;
+
 
 }

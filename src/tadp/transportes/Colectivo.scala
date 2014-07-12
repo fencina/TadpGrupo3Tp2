@@ -11,9 +11,15 @@ case class Colectivo(override val linea: String, override val estaciones: List[E
     return this.distanciaAMinutos(distancia)
   }
 
-  //no tiene duración estación?
-  override def duracionEstacion = 0 //???????????
+  // aca no puede ir, solo aplicable al colectivo!
+  def kilometrosahora(kilometros: Double): Double = kilometros / velocidadColectivo;
+  def distanciaAMinutos(d: Double): Double = this.horastominutos(this.kilometrosahora(this.metrostokm(d)))
 
+  // NO! solo es responsabilidad del colectivo la velocidad del colectivo!!!
+  def velocidadColectivo = 15
+
+ def duracionEstacion=0;
+  
   override def costo(estacionInicio: Estacion, estacionFin: Estacion, moduloExterno: moduloExternoTransporte): Double = {
     val distancia = moduloExterno.distanciaEntre(estacionInicio, estacionFin)
     return this.obtenerCosto(this.metrostokm(distancia))
@@ -25,7 +31,6 @@ case class Colectivo(override val linea: String, override val estaciones: List[E
     case _                            => 2.75
   }
 
-  // NO!
-  override def soyColectivo = true
+
 
 }

@@ -21,8 +21,7 @@ case class Tren(override val linea: String, override val estaciones: List[Estaci
       .head
   }
 
-  // NO!
-  override def soyTren = true
+
 }
 
 class PrecioTren(val precio: Double, val cantidadLimiteEstaciones: Int)

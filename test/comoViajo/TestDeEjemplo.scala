@@ -215,4 +215,159 @@ class TestDeEjemplo {
 
   }
 
+
+      @Test
+  def PreguntoDuracionAUnTramoConUnSubte= {
+
+    val moduloExternoMock = new moduloExternoTransporte() {
+
+      def getTransportesCercanos(direccion: Direccion): List[Transporte] = List(subteE)
+
+      def obtenerEstacionCombinacion(t1: Transporte, t2: Transporte): Option[Estacion] = None
+      def puedeCombinarse(t1: Transporte, t2: Transporte, origen: Direccion, destino: Direccion): Boolean = false
+
+      def distanciaEntre(estacionInicio: Estacion, estacionFin: Estacion): Int = 400
+
+      def estanCerca(direccion1: Direccion, direccion2: Direccion): Boolean = direccion1 == direccion2;
+    }
+
+
+    val tramo = new Tramo(Estacion01SubteE  , Estacion03SubteE , subteE, moduloExternoMock );
+    
+
+
+    //Chequeo que la duracion sea 4 min (2 estaciones)
+    assertEquals(4, tramo.duracion, 0)
+
+
+
+  }
+  
+  
+    @Test
+  def PreguntoCostoAUnTramoConUnSubte= {
+
+    val moduloExternoMock = new moduloExternoTransporte() {
+
+      def getTransportesCercanos(direccion: Direccion): List[Transporte] = List(subteE)
+
+      def obtenerEstacionCombinacion(t1: Transporte, t2: Transporte): Option[Estacion] = None
+      def puedeCombinarse(t1: Transporte, t2: Transporte, origen: Direccion, destino: Direccion): Boolean = false
+
+      def distanciaEntre(estacionInicio: Estacion, estacionFin: Estacion): Int = 400
+
+      def estanCerca(direccion1: Direccion, direccion2: Direccion): Boolean = direccion1 == direccion2;
+    }
+
+
+    val tramo = new Tramo(Estacion01SubteE  , Estacion03SubteE , subteE, moduloExternoMock );
+    
+
+
+    //Chequeo que el costo sea 4,50
+    assertEquals(4.50, tramo.costo, 0)
+
+
+
+  }
+
+  @Test
+  def PreguntoCostoAUnTramoConUnColectivo = {
+
+    val moduloExternoMock = new moduloExternoTransporte() {
+
+      def getTransportesCercanos(direccion: Direccion): List[Transporte] = List(subteE)
+
+      def obtenerEstacionCombinacion(t1: Transporte, t2: Transporte): Option[Estacion] = None
+      def puedeCombinarse(t1: Transporte, t2: Transporte, origen: Direccion, destino: Direccion): Boolean = false
+
+      def distanciaEntre(estacionInicio: Estacion, estacionFin: Estacion): Int = 400
+
+      def estanCerca(direccion1: Direccion, direccion2: Direccion): Boolean = direccion1 == direccion2;
+    }
+
+    val tramo = new Tramo(Estacion01Colectivo4, Estacion03Colectivo4, colectivo04, moduloExternoMock);
+    //Chequeo que el costo sea 2,50 (menos de 3 km)
+    assertEquals(2.5, tramo.costo, 0)
+
+  }
+  
+  
+    @Test
+  def PreguntoDuracionAUnTramoConUnColectivo = {
+
+    val moduloExternoMock = new moduloExternoTransporte() {
+
+      def getTransportesCercanos(direccion: Direccion): List[Transporte] = List(subteE)
+
+      def obtenerEstacionCombinacion(t1: Transporte, t2: Transporte): Option[Estacion] = None
+      def puedeCombinarse(t1: Transporte, t2: Transporte, origen: Direccion, destino: Direccion): Boolean = false
+
+      def distanciaEntre(estacionInicio: Estacion, estacionFin: Estacion): Int = 400
+
+      def estanCerca(direccion1: Direccion, direccion2: Direccion): Boolean = direccion1 == direccion2;
+    }
+
+    val tramo = new Tramo(Estacion01Colectivo4, Estacion03Colectivo4, colectivo04, moduloExternoMock);
+    //Chequeo que el costo sea 1.6 min (15km por hora y recorro 0,4 km)
+    assertEquals(1.6, tramo.duracion, 0)
+
+  }
+
+    
+
+    
+    @Test
+  def PreguntoCostoAUnTramoConUnTren= {
+
+    val moduloExternoMock = new moduloExternoTransporte() {
+
+      def getTransportesCercanos(direccion: Direccion): List[Transporte] = List(subteE)
+
+      def obtenerEstacionCombinacion(t1: Transporte, t2: Transporte): Option[Estacion] = None
+      def puedeCombinarse(t1: Transporte, t2: Transporte, origen: Direccion, destino: Direccion): Boolean = false
+
+      def distanciaEntre(estacionInicio: Estacion, estacionFin: Estacion): Int = 400
+
+      def estanCerca(direccion1: Direccion, direccion2: Direccion): Boolean = direccion1 == direccion2;
+    }
+
+
+    val tramo = new Tramo(Estacion01Tren , Estacion02Tren ,tren , moduloExternoMock );
+    //Chequeo que el costo sea 5 ( 1 estacion)
+    assertEquals(5, tramo.costo, 0)
+
+
+
+
+
+  }
+  
+
+    @Test
+    def PreguntoDuracionAUnTramoConUnTren= {
+
+    val moduloExternoMock = new moduloExternoTransporte() {
+
+      def getTransportesCercanos(direccion: Direccion): List[Transporte] = List(subteE)
+
+      def obtenerEstacionCombinacion(t1: Transporte, t2: Transporte): Option[Estacion] = None
+      def puedeCombinarse(t1: Transporte, t2: Transporte, origen: Direccion, destino: Direccion): Boolean = false
+
+      def distanciaEntre(estacionInicio: Estacion, estacionFin: Estacion): Int = 400
+
+      def estanCerca(direccion1: Direccion, direccion2: Direccion): Boolean = direccion1 == direccion2;
+    }
+
+
+    val tramo = new Tramo(Estacion01Tren , Estacion02Tren ,tren , moduloExternoMock );
+    //Chequeo que el costo sea 3 min ( 1 estacion)
+    assertEquals(3, tramo.duracion, 0)
+
+
+
+
+
+  }
+  
 }

@@ -1,61 +1,79 @@
 package tadp.buscador
 
 import tadp.transportes.Tramo
-import tadp.transportes.Combinacion
+import tadp.transportes.Transporte
+import tadp.transportes.Subte
+import tadp.transportes.Tren
+import tadp.transportes.Colectivo
+import tadp.dependencias.moduloExternoTransporte
 
 // No es necesario pasar las combinaciones por fuera del objeto porque son intrínsecas a la lista de tramos
 // (la lista de tramos es toda la información que se necesita para calcular las combinaciones)
-class Viaje(val tramos: List[Tramo], val combinacion: Option[Combinacion]) {
+class Viaje(val tramos: List[Tramo], val moduloExterno:moduloExternoTransporte) {
 
   def costo: Double = {
 
     //Caso excepcion Subte y Subte
     if (tramos.size > 1)
-      /*
-       * tramos.head.transporte..... mismo problema que antes: responsabilidad del tramo, le pregunto
-       * al tramo, no le saco todos los datos y hago el cálculo afuera
-       * 
-       * Además, este if solo aplica al subte, debería ser responsabilidad del modelado de combinaciones
-       * o de otra forma, que sea un patternmatching fuera de ellos seleccionando el calculo del costo
-       * por cada tipo de combinación de transportes
-       */
-      if (tramos.head.transporte.soySubte && tramos.tail.head.transporte.soySubte)
-        return tramos.head.costo
-
+    {
+    
+    val primerTramo = tramos.head;
+    val segundoTramo = tramos.tail.head;
+    val primerTramoTransporte = primerTramo.transporte;
+    val segundoTramoTransporte = segundoTramo.transporte;
+    
+    val combinacion:List[Transporte] = List(primerTramoTransporte,segundoTramoTransporte);
+    
+    combinacion match{
+      case List(Subte(linea,estaciones),Subte(linea2,estaciones2)) => return primerTramo.costo;
+      case _ =>
+    }
+   
+      
+    }
+    
     return tramos.map(t => t.costo).sum
   }
 
-  // hacer patternmatching con los tramos para conseguir los tiempos de combinación
-  // cuidado, List es ordenado por lo que List(1,2) != List(2,1)
-  // Set NO es ordenado por lo que Set(1,2) == Set(2,1)
-  val ejemplo = List(1, 2, 3) match {
-    case List()                       => "nada"
-    case List(unSoloNumero)           => unSoloNumero.toString
-    case List(2, 3)                   => "dos y tres"
-    case List(x, y) if x > 1 && y < 5 => "otra cosa?"
-    case List(_: Int, _: Int)         => "lista con dos ints"
-  }
 
   def duracion: Double = tramos.map(t => t.duracion).sum + this.calcularDuracionesCombinaciones()
 
-  def calcularDuracionesCombinaciones(): Double = combinacion.map(_.duracion).getOrElse(0)
-  /* Usar combinadores funcionales!!!
-    combinacion match {
-    case Some(comb) => comb.duracion()
-    case None       => 0
-  }*/
-
+  def calcularDuracionesCombinaciones(): Double =
+  {
+    if (tramos.size < 2) return 0;
+    
+    val primerTramo = tramos.head;
+    val segundoTramo = tramos.tail.head;
+    val primerTramoTransporte = primerTramo.transporte;
+    val segundoTramoTransporte = segundoTramo.transporte;
+    
+    val combinacion:List[Transporte] = List(primerTramoTransporte,segundoTramoTransporte);
+    
+    combinacion match{
+      case List(Subte(linea,estaciones),Subte(linea2,estaciones2)) => return 4;
+      case List(Tren(linea,estaciones,lp),Tren(linea2,estaciones2,lp2)) => return 6; 
+      case List(Tren(linea,estaciones,lp),Subte(linea2,estaciones2)) => return 5; 
+      case List(Subte(linea2,estaciones2),Tren(linea,estaciones,lp)) => return 5;
+      case List(Colectivo(l,e),_)=> return moduloExterno.distanciaEntre(primerTramo.fin, segundoTramo.inicio) / 100 * 2.5
+      case List(_,Colectivo(l,e))=> return  moduloExterno.distanciaEntre(primerTramo.fin, segundoTramo.inicio) / 100 * 2.5
+    }
+    
+    
+    
+    
+    
+  }
   def tengoAlgunTramoDeLaZona(zona: ZonaTrait) = !this.tramos.filter(tramo => tramo.sosDeLaZona(zona)).isEmpty
 
   def estacionDelUltimoTramo = this.tramos.last.fin
 
   def zonaEnLaQueTermina = this.estacionDelUltimoTramo.direccion.zona
 
-  def aplicarDescuento(descuento: Descuento): DescuentoDeViaje = new DescuentoDeViaje(tramos, combinacion, descuento, this)
+  def aplicarDescuento(descuento: Descuento): DescuentoDeViaje = new DescuentoDeViaje(tramos, moduloExterno, descuento, this)
 
 }
 
-class DescuentoDeViaje(tramos: List[Tramo], combinacion: Option[Combinacion], val descuento: Descuento, val viajeOriginal: Viaje) extends Viaje(tramos, combinacion) {
+class DescuentoDeViaje(tramos: List[Tramo], moduloExterno: moduloExternoTransporte,val descuento: Descuento, val viajeOriginal: Viaje) extends Viaje(tramos, moduloExterno) {
 
   override def costo: Double = descuento.aplicar(viajeOriginal.costo)
 
