@@ -2,12 +2,12 @@ package tadp.transportes
 
 import tadp.dependencias.moduloExternoTransporte
 
-case class Tren(override val linea: String, override val estaciones: List[Estacion],val listaPrecios: List[PrecioTren]) extends Transporte(linea, estaciones) {
+case class Tren(override val linea: String, override val estaciones: List[Estacion], val listaPrecios: List[PrecioTren]) extends Transporte(linea, estaciones) {
 
   override def duracionEstacion = 3;
 
-
-  override def costo(estacionInicio: Estacion, estacionFin: Estacion,moduloExterno:moduloExternoTransporte): Double = obtenerCosto(this.cantidadEstacionesEntre(estacionInicio, estacionFin));
+  override def costo(estacionInicio: Estacion, estacionFin: Estacion, moduloExterno: moduloExternoTransporte): Double =
+    obtenerCosto(this.cantidadEstacionesEntre(estacionInicio, estacionFin));
 
   def obtenerCosto(cantidadEstaciones: Int): Double = {
     this.listaPrecios
@@ -21,5 +21,8 @@ case class Tren(override val linea: String, override val estaciones: List[Estaci
       .head
   }
 
- override def soyTren = true
+  // NO!
+  override def soyTren = true
 }
+
+class PrecioTren(val precio: Double, val cantidadLimiteEstaciones: Int)
