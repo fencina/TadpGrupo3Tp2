@@ -18,8 +18,8 @@ case class Colectivo(override val linea: String, override val estaciones: List[E
   // NO! solo es responsabilidad del colectivo la velocidad del colectivo!!!
   def velocidadColectivo = 15
 
- def duracionEstacion=0;
-  
+  def duracionEstacion = 0 // sigue mal...
+
   override def costo(estacionInicio: Estacion, estacionFin: Estacion, moduloExterno: moduloExternoTransporte): Double = {
     val distancia = moduloExterno.distanciaEntre(estacionInicio, estacionFin)
     return this.obtenerCosto(this.metrostokm(distancia))
@@ -30,7 +30,5 @@ case class Colectivo(override val linea: String, override val estaciones: List[E
     case distancia if (distancia > 6) => 2.85
     case _                            => 2.75
   }
-
-
 
 }
